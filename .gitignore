@@ -5,3 +5,4 @@
 build/
 ios/Pods/
 .vscode/
+*.iml

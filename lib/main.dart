@@ -1,13 +1,12 @@
-
 import 'package:flutter/material.dart';
 import 'package:math_expressions/math_expressions.dart';
 
 void main() {
-  runApp(const CalculatorApp());
+  runApp(const AplicativoCalculadora());
 }
 
-class CalculatorApp extends StatelessWidget {
-  const CalculatorApp({super.key});
+class AplicativoCalculadora extends StatelessWidget {
+  const AplicativoCalculadora({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -18,24 +17,24 @@ class CalculatorApp extends StatelessWidget {
         primarySwatch: Colors.blueGrey,
         useMaterial3: true,
       ),
-      home: const CalculatorHome(),
+      home: const TelaCalculadora(),
       debugShowCheckedModeBanner: false,
     );
   }
 }
 
-class CalculatorHome extends StatefulWidget {
-  const CalculatorHome({super.key});
+class TelaCalculadora extends StatefulWidget {
+  const TelaCalculadora({super.key});
 
   @override
-  State<CalculatorHome> createState() => _CalculatorHomeState();
+  State<TelaCalculadora> createState() => _EstadoTelaCalculadora();
 }
 
-class _CalculatorHomeState extends State<CalculatorHome> {
-  String _expression = '';
-  String _result = '';
+class _EstadoTelaCalculadora extends State<TelaCalculadora> {
+  String _expressao = '';
+  String _resultado = '';
 
-  final List<List<String>> buttons = [
+  final List<List<String>> botoes = [
     ['C', '±', '%', '÷'],
     ['7', '8', '9', '×'],
     ['4', '5', '6', '-'],
@@ -43,57 +42,56 @@ class _CalculatorHomeState extends State<CalculatorHome> {
     ['0', '.', '⌫', '='],
   ];
 
-  void _onButtonPressed(String value) {
+  void _quandoBotaoPressionado(String valor) {
     setState(() {
-      if (value == 'C') {
-        _expression = '';
-        _result = '';
+      if (valor == 'C') {
+        _expressao = '';
+        _resultado = '';
         return;
       }
 
-      if (value == '⌫') {
-        if (_expression.isNotEmpty) {
-          _expression = _expression.substring(0, _expression.length - 1);
+      if (valor == '⌫') {
+        if (_expressao.isNotEmpty) {
+          _expressao = _expressao.substring(0, _expressao.length - 1);
         }
         return;
       }
 
-      if (value == '=') {
-        _evaluateExpression();
+      if (valor == '=') {
+        _avaliarExpressao();
         return;
       }
 
-      if (value == '±') {
-        // toggle sign of last number
-        _toggleSign();
+      if (valor == '±') {
+        _alternarSinal();
         return;
       }
 
-      // Append other buttons
-      _expression += value;
+      // Adicionar outros valores
+      _expressao += valor;
     });
   }
 
-  void _toggleSign() {
-    // Find last number in the expression and toggle its sign
+  void _alternarSinal() {
+    // Encontra o último número e alterna o sinal
     final regex = RegExp(r'([\d\.]+)$');
-    final match = regex.firstMatch(_expression);
+    final match = regex.firstMatch(_expressao);
     if (match != null) {
-      final numStr = match.group(0)!;
-      final start = match.start;
-      if (numStr.startsWith('-')) {
-        _expression = _expression.replaceRange(start, _expression.length, numStr.substring(1));
+      final numeroStr = match.group(0)!;
+      final inicio = match.start;
+      if (numeroStr.startsWith('-')) {
+        _expressao = _expressao.replaceRange(inicio, _expressao.length, numeroStr.substring(1));
       } else {
-        _expression = _expression.replaceRange(start, _expression.length, '-$numStr');
+        _expressao = _expressao.replaceRange(inicio, _expressao.length, '-$numeroStr');
       }
-    } else if (_expression.isEmpty) {
-      _expression = '-';
+    } else if (_expressao.isEmpty) {
+      _expressao = '-';
     }
   }
 
-  void _evaluateExpression() {
+  void _avaliarExpressao() {
     try {
-      final exp = _expression
+      final exp = _expressao
           .replaceAll('×', '*')
           .replaceAll('÷', '/')
           .replaceAll('%', '/100');
@@ -103,21 +101,21 @@ class _CalculatorHomeState extends State<CalculatorHome> {
       ContextModel cm = ContextModel();
       double eval = parsed.evaluate(EvaluationType.REAL, cm);
 
-      _result = _formatResult(eval);
+      _resultado = _formatarResultado(eval);
     } catch (e) {
-      _result = 'Erro';
+      _resultado = 'Erro';
     }
   }
 
-  String _formatResult(double value) {
-    if (value == value.roundToDouble()) {
-      return value.toInt().toString();
+  String _formatarResultado(double valor) {
+    if (valor == valor.roundToDouble()) {
+      return valor.toInt().toString();
     }
-    return value.toString();
+    return valor.toString();
   }
 
-  Color _operatorColor() => Colors.orangeAccent;
-  Color _buttonColor() => Colors.grey.shade900;
+  Color _corOperador() => Colors.orangeAccent;
+  Color _corBotao() => Colors.grey.shade900;
 
   @override
   Widget build(BuildContext context) {
@@ -139,14 +137,14 @@ class _CalculatorHomeState extends State<CalculatorHome> {
                       reverse: true,
                       scrollDirection: Axis.horizontal,
                       child: Text(
-                        _expression.isEmpty ? '0' : _expression,
+                        _expressao.isEmpty ? '0' : _expressao,
                         style: const TextStyle(fontSize: 32, color: Colors.white70),
                         textAlign: TextAlign.right,
                       ),
                     ),
                     const SizedBox(height: 12),
                     Text(
-                      _result,
+                      _resultado,
                       style: const TextStyle(fontSize: 48, fontWeight: FontWeight.bold),
                       textAlign: TextAlign.right,
                     ),
@@ -160,31 +158,31 @@ class _CalculatorHomeState extends State<CalculatorHome> {
                 padding: const EdgeInsets.all(12),
                 color: Colors.black87,
                 child: Column(
-                  children: buttons.map((row) {
+                  children: botoes.map((linha) {
                     return Expanded(
                       child: Row(
-                        children: row.map((btn) {
-                          final isOperator = ['÷', '×', '-', '+', '='].contains(btn);
-                          final isWide = btn == '0';
+                        children: linha.map((btn) {
+                          final eOperador = ['÷', '×', '-', '+', '='].contains(btn);
+                          final eLargo = btn == '0';
                           return Expanded(
-                            flex: isWide ? 2 : 1,
+                            flex: eLargo ? 2 : 1,
                             child: Padding(
                               padding: const EdgeInsets.all(6.0),
                               child: ElevatedButton(
                                 style: ElevatedButton.styleFrom(
-                                  backgroundColor: isOperator ? _operatorColor() : _buttonColor(),
+                                  backgroundColor: eOperador ? _corOperador() : _corBotao(),
                                   shape: const RoundedRectangleBorder(
                                     borderRadius: BorderRadius.all(Radius.circular(12)),
                                   ),
                                   padding: const EdgeInsets.symmetric(vertical: 18),
                                 ),
-                                onPressed: () => _onButtonPressed(btn),
+                                onPressed: () => _quandoBotaoPressionado(btn),
                                 child: Text(
                                   btn,
                                   style: TextStyle(
                                     fontSize: 24,
                                     fontWeight: FontWeight.w600,
-                                    color: isOperator ? Colors.black : Colors.white,
+                                    color: eOperador ? Colors.black : Colors.white,
                                   ),
                                 ),
                               ),
