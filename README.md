@@ -1,12 +1,10 @@
-# 📱 Calculadora em Flutter
 
 Este projeto é uma calculadora simples feita em **Flutter**, desenvolvida para treinar a construção de interfaces e manipulação de expressões matemáticas.
 
 ---
 
-## 🎨 Estrutura da Interface (UI)
+## 🎨 Estrutura da Interface 
 
-A interface foi construída usando a ideia de **árvore de widgets** do Flutter:
 
 ```
 MaterialApp
